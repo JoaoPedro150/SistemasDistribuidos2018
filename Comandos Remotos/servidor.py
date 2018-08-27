@@ -77,7 +77,7 @@ class Server:
                 self.__connections.append(connection)
 
             while (True):
-                command = connection.recv(16384).decode()
+                command = connection.recv(1024).decode()
 
                 if (command == '_exit'): break
 
@@ -104,7 +104,7 @@ class Server:
 
     @staticmethod
     def __send(data, socket_, directory):
-        socket_.send(('%s:%s[-.x.-]%s' % (socket.gethostname(), directory, data)).encode())
+        socket_.send(('%s:%s[-.x.-]%s[-.x.-]%s' % (socket.gethostname(), directory, len(data), data)).encode())
 
     def close(self):
         if (self.__socket):

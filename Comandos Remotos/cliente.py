@@ -79,12 +79,26 @@ class Client:
             else:
                 return ('%s:%s[-.x.-] ' % (socket.gethostname(), self.__directory))
         else:
-            return self.__socket.recv(16384).decode()
+            try:
+                output = self.__socket.recv(1024).decode().split('[-.x.-]')
+
+                tamTotal = int(output[1])
+                tam = 1024 - (len(output[0]) + len(output[1]))
+
+                data = output[2]
+
+                while (tam < tamTotal):
+                    data += self.__socket.recv(1024).decode()
+                    tam += 1024
+
+                return (('%s[-.x.-]%s') % (output[0], data))
+            except IndexError:
+                return None
 
     def __get_reply(self):
         try:
             self.__socket.send('_start'.encode())
-            output = self.__socket.recv(16384).decode()
+            output = self.__socket.recv(1024).decode()
 
             self.__reply = output[:-1] + '$ '
 
